@@ -5,12 +5,14 @@ import { CommonRoutes } from "../routes/common.route";
 import { UserRoutes } from "../routes/user.routes";
 import { MongoConnection } from "./mongo";
 import { BoatRoutes } from "../routes/boat.routes";
+import { AuthRoutes } from "../routes/auth.routes";
 
 class App{
     public app: express.Application;
     private mongoConnection: MongoConnection = new MongoConnection();
     private commonRoutes: CommonRoutes = new CommonRoutes();
     private userRoutes: UserRoutes = new UserRoutes();
+    private authRoutes: AuthRoutes = new AuthRoutes();
     private boatRoutes:BoatRoutes = new BoatRoutes();
 
     constructor(){
@@ -18,6 +20,7 @@ class App{
         this.config();
         this.mongoConnection.connect();
         this.commonRoutes.route(this.app);
+        this.authRoutes.route(this.app);
         this.userRoutes.route(this.app);
         this.boatRoutes.route(this.app);
     }

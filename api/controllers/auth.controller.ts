@@ -7,12 +7,12 @@ import { IAuth, ILoginUser } from "../modules/auth/entity/auth.entity";
 import { IUser } from "../modules/user/entity/user.entity";
 import generateUUID from "smc-uuid-generator";
 
-export class UserController {
+export class AuthController {
   private authService: AuthService = new AuthService();
   private userService: UserService = new UserService();
 
   public login(req: Request, res: Response) {
-
+    console.log(req.body);
     if (req?.body?.email && req?.body?.password) {
       if (req?.body?.email) {
         req.body.email = req.body.email.toLowerCase();
@@ -48,12 +48,18 @@ export class UserController {
                     });
               }).catch(error => {
                 res.status(500).json({
-                    status: "Success",
-                    message: "Data fetched successfully",
+                    status: "Fail",
+                    message: "Something Went Wrong",
                     data: {}
                 });
               });
             }
+        } else {
+          res.status(200).json({
+            status: "Success",
+            message: "Invalid Credentials",
+            data: {}
+        });
         }
       });
     } else {
@@ -66,20 +72,13 @@ export class UserController {
   }
 
   public register(req: Request, res: Response) {
-    if (req && req.body && req.body.firstName && req.body.username && req.body.email && req.body.password) {
+    if (req && req.body && req.body.firstName && req.body.lastName && req.body.email && req.body.password) {
       if (req.body.email) {
         req.body.email = req.body.email.toLowerCase();
-      }
-      if (req.body.username) {
-        req.body.username = req.body.username.toLowerCase();
-      }
-      if (req.body.lastName) {
-        req.body.username = null;
       }
 
       let filter: any = {};
       filter = queryBuilderHelper.valueMatcher(filter, 'isDeleted', false);
-      filter = queryBuilderHelper.valueMatcher(filter, 'username', req.body.username);
       filter = queryBuilderHelper.valueMatcher(filter, 'email', req.body.email);
 
       this.userService.filterUsers(filter).then((dataUsers: ILoginUser[]) => {
@@ -95,7 +94,6 @@ export class UserController {
               firstName: req.body.firstName,
               lastName: req.body.lastName,
               email: req.body.email,
-              username: req.body.username,
               password: sha1(req.body.password)
             };
 
